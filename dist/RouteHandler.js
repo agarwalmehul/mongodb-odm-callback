@@ -1,9 +1,20 @@
 'use strict';
 
-import { ResponseBody } from './ResponseBody';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RouteHandler = undefined;
 
-export class RouteHandler {
-  constructor(Model) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ResponseBody = require('./ResponseBody');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RouteHandler = exports.RouteHandler = function () {
+  function RouteHandler(Model) {
+    _classCallCheck(this, RouteHandler);
+
     this.Model = Model;
 
     // Method Hard-Binding to allow them to be assigned to
@@ -16,121 +27,151 @@ export class RouteHandler {
     this._handleError = this._handleError.bind(this);
   }
 
-  index(request, response, next) {
-    if (response.body) {
-      return process.nextTick(next);
-    }
+  _createClass(RouteHandler, [{
+    key: 'index',
+    value: function index(request, response, next) {
+      var _this = this;
 
-    const { Model } = this;
-    const { query } = request;
-
-    Model.index(query, (error, documents = []) => {
-      let responseBody;
-      if (this._handleError(error, response)) {
-        return next();
+      if (response.body) {
+        return process.nextTick(next);
       }
 
-      responseBody = new ResponseBody(200, 'OK', documents);
-      response.body = responseBody;
-      next();
-    });
-  }
+      var Model = this.Model;
+      var query = request.query;
 
-  findById(request, response, next) {
-    if (response.body) {
-      return process.nextTick(next);
+
+      Model.index(query, function (error) {
+        var documents = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+        var responseBody = void 0;
+        if (_this._handleError(error, response)) {
+          return next();
+        }
+
+        responseBody = new _ResponseBody.ResponseBody(200, 'OK', documents);
+        response.body = responseBody;
+        next();
+      });
     }
+  }, {
+    key: 'findById',
+    value: function findById(request, response, next) {
+      var _this2 = this;
 
-    const { Model } = this;
-    const { params } = request;
-    const id = params.id;
-
-    Model.findById(id, (error, documents = {}) => {
-      let responseBody;
-      if (this._handleError(error, response)) {
-        return next();
+      if (response.body) {
+        return process.nextTick(next);
       }
 
-      responseBody = new ResponseBody(200, 'OK', documents);
-      response.body = responseBody;
-      next();
-    });
-  }
+      var Model = this.Model;
+      var params = request.params;
 
-  create(request, response, next) {
-    if (response.body) {
-      return process.nextTick(next);
+      var id = params.id;
+
+      Model.findById(id, function (error) {
+        var documents = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var responseBody = void 0;
+        if (_this2._handleError(error, response)) {
+          return next();
+        }
+
+        responseBody = new _ResponseBody.ResponseBody(200, 'OK', documents);
+        response.body = responseBody;
+        next();
+      });
     }
+  }, {
+    key: 'create',
+    value: function create(request, response, next) {
+      var _this3 = this;
 
-    const { Model } = this;
-    const { body } = request;
-
-    Model.create(body, (error, document) => {
-      let responseBody;
-      if (this._handleError(error, response)) {
-        return next();
+      if (response.body) {
+        return process.nextTick(next);
       }
 
-      responseBody = new ResponseBody(201, 'OK', document);
-      response.body = responseBody;
-      next();
-    });
-  }
+      var Model = this.Model;
+      var body = request.body;
 
-  update(request, response, next) {
-    if (response.body) {
-      return process.nextTick(next);
+
+      Model.create(body, function (error, document) {
+        var responseBody = void 0;
+        if (_this3._handleError(error, response)) {
+          return next();
+        }
+
+        responseBody = new _ResponseBody.ResponseBody(201, 'OK', document);
+        response.body = responseBody;
+        next();
+      });
     }
+  }, {
+    key: 'update',
+    value: function update(request, response, next) {
+      var _this4 = this;
 
-    const { Model } = this;
-    const { params, body } = request;
-    const _id = params.id;
-
-    Model.update({ _id }, body, (error, msg) => {
-      let responseBody;
-      if (this._handleError(error, response)) {
-        return next();
+      if (response.body) {
+        return process.nextTick(next);
       }
 
-      responseBody = new ResponseBody(200, 'OK');
-      response.body = responseBody;
-      next();
-    });
-  }
+      var Model = this.Model;
+      var params = request.params,
+          body = request.body;
 
-  remove(request, response, next) {
-    if (response.body) {
-      return process.nextTick(next);
+      var _id = params.id;
+
+      Model.update({ _id: _id }, body, function (error, msg) {
+        var responseBody = void 0;
+        if (_this4._handleError(error, response)) {
+          return next();
+        }
+
+        responseBody = new _ResponseBody.ResponseBody(200, 'OK');
+        response.body = responseBody;
+        next();
+      });
     }
+  }, {
+    key: 'remove',
+    value: function remove(request, response, next) {
+      var _this5 = this;
 
-    const { Model } = this;
-    const { params } = request;
-    const _id = params.id;
-
-    Model.remove({ _id }, error => {
-      let responseBody;
-      if (this._handleError(error, response)) {
-        return next();
+      if (response.body) {
+        return process.nextTick(next);
       }
 
-      responseBody = new ResponseBody(200, 'OK');
-      response.body = responseBody;
-      next();
-    });
-  }
+      var Model = this.Model;
+      var params = request.params;
 
-  _handleError(error, response) {
-    let responseBody;
+      var _id = params.id;
 
-    if (error && error.constructor === ResponseBody) {
-      response.body = error;
-      return true;
-    } else if (error) {
-      responseBody = new ResponseBody(500, error.toString());
-      response.body = responseBody;
-      return true;
+      Model.remove({ _id: _id }, function (error) {
+        var responseBody = void 0;
+        if (_this5._handleError(error, response)) {
+          return next();
+        }
+
+        responseBody = new _ResponseBody.ResponseBody(200, 'OK');
+        response.body = responseBody;
+        next();
+      });
     }
+  }, {
+    key: '_handleError',
+    value: function _handleError(error, response) {
+      var responseBody = void 0;
 
-    return false;
-  }
-}
+      if (error && error.constructor === _ResponseBody.ResponseBody) {
+        response.body = error;
+        return true;
+      } else if (error) {
+        responseBody = new _ResponseBody.ResponseBody(500, error.toString());
+        response.body = responseBody;
+        return true;
+      }
+
+      return false;
+    }
+  }]);
+
+  return RouteHandler;
+}();

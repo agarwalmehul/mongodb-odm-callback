@@ -1,13 +1,31 @@
 'use strict';
 
-import mongoose from 'mongoose';
-import async from 'async';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MongoModel = undefined;
 
-export class MongoModel {
-  constructor(modelName, Schema) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _mongoose = require('mongoose');
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _async = require('async');
+
+var _async2 = _interopRequireDefault(_async);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MongoModel = exports.MongoModel = function () {
+  function MongoModel(modelName, Schema) {
+    _classCallCheck(this, MongoModel);
+
     this.ModelName = modelName;
     this.Schema = Schema;
-    this.MongooseModel = mongoose.model(modelName, Schema);
+    this.MongooseModel = _mongoose2.default.model(modelName, Schema);
     this._queryParams = Schema._queryParams;
     this._filterQuery = Schema._filterQuery;
 
@@ -26,123 +44,176 @@ export class MongoModel {
 
   // Method _execQuery: Select, Populate and Sort Mongo query results
   // as configured in the Schema
-  _execQuery(query, callback) {
-    const queryParams = this._queryParams;
-    let queryResult = query.sort({ _id: -1 });
 
-    if (queryParams && queryParams.select) {
-      queryResult = queryResult.select(queryParams.select);
+
+  _createClass(MongoModel, [{
+    key: '_execQuery',
+    value: function _execQuery(query, callback) {
+      var queryParams = this._queryParams;
+      var queryResult = query.sort({ _id: -1 });
+
+      if (queryParams && queryParams.select) {
+        queryResult = queryResult.select(queryParams.select);
+      }
+
+      if (queryParams && queryParams.populate) {
+        queryResult = queryResult.populate(queryParams.populate);
+      }
+
+      return queryResult.exec(callback);
     }
 
-    if (queryParams && queryParams.populate) {
-      queryResult = queryResult.populate(queryParams.populate);
+    // Method _findRaw: Finds all documents as per attribute criterias
+    // and returns them in their natural structure without transforming
+
+  }, {
+    key: '_findRaw',
+    value: function _findRaw(attrs, callback) {
+      this.MongooseModel.find(attrs || {}).exec(callback);
     }
 
-    return queryResult.exec(callback);
-  }
+    // Method _findRawOne: Finds first document as per attribute criterias
+    // and returns it in its natural structure without transforming
 
-  // Method _findRaw: Finds all documents as per attribute criterias
-  // and returns them in their natural structure without transforming
-  _findRaw(attrs, callback) {
-    this.MongooseModel.find(attrs || {}).exec(callback);
-  }
+  }, {
+    key: '_findOneRaw',
+    value: function _findOneRaw() {
+      var attrs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var callback = arguments[1];
 
-  // Method _findRawOne: Finds first document as per attribute criterias
-  // and returns it in its natural structure without transforming
-  _findOneRaw(attrs = {}, callback) {
-    this.MongooseModel.findOne(attrs).exec(callback);
-  }
+      this.MongooseModel.findOne(attrs).exec(callback);
+    }
 
-  // Method _find: Finds all documents as per attribute criterias,
-  // transforms result using the _execQuery method and returns it.
-  _find(attrs = {}, callback) {
-    const query = this.MongooseModel.find(attrs).lean();
-    this._execQuery(query, callback);
-  }
+    // Method _find: Finds all documents as per attribute criterias,
+    // transforms result using the _execQuery method and returns it.
 
-  // Method _findOne: Finds first document as per attribute criterias,
-  // transforms result using the _execQuery method and returns it.
-  _findOne(attrs = {}, callback) {
-    const query = this.MongooseModel.findOne(attrs).lean();
-    this._execQuery(query, callback);
-  }
+  }, {
+    key: '_find',
+    value: function _find() {
+      var attrs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var callback = arguments[1];
 
-  // Method index: Finds all documents, transforms result using
-  // the _execQuery method and returns it.
-  index(query, callback) {
-    let params = {};
-    (this._filterQuery || []).forEach(key => {
-      let value = query[key];
-      if (value !== undefined) {
-        if (typeof value === 'string') {
-          params[key] = { $in: value.split(',') };
-        } else {
-          params[key] = value;
+      var query = this.MongooseModel.find(attrs).lean();
+      this._execQuery(query, callback);
+    }
+
+    // Method _findOne: Finds first document as per attribute criterias,
+    // transforms result using the _execQuery method and returns it.
+
+  }, {
+    key: '_findOne',
+    value: function _findOne() {
+      var attrs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var callback = arguments[1];
+
+      var query = this.MongooseModel.findOne(attrs).lean();
+      this._execQuery(query, callback);
+    }
+
+    // Method index: Finds all documents, transforms result using
+    // the _execQuery method and returns it.
+
+  }, {
+    key: 'index',
+    value: function index(query, callback) {
+      var params = {};
+      (this._filterQuery || []).forEach(function (key) {
+        var value = query[key];
+        if (value !== undefined) {
+          if (typeof value === 'string') {
+            params[key] = { $in: value.split(',') };
+          } else {
+            params[key] = value;
+          }
         }
-      }
-    });
+      });
 
-    this._find(params, callback);
-  }
+      this._find(params, callback);
+    }
 
-  // Method findById: Finds document bearing mentioned _id property value,
-  // transforms result using  the _execQuery method and returns it.
-  findById(id, callback) {
-    const ids = id.toString().split(',');
-    const findOneOrFind = ids.length === 1 ? this._findOne : this._find;
-    findOneOrFind({ _id: { $in: ids } }, callback);
-  }
+    // Method findById: Finds document bearing mentioned _id property value,
+    // transforms result using  the _execQuery method and returns it.
 
-  // Method create: Creates a new document with the provided attributes.
-  // Only properties mentioned in the Schema will be stored while other
-  // properties being discarded.
-  create(attrs, callback) {
-    const _this = this;
-    async.waterfall([
-    // Create Document
-    next => {
-      _this.MongooseModel.create(attrs, next);
-    },
+  }, {
+    key: 'findById',
+    value: function findById(id, callback) {
+      var ids = id.toString().split(',');
+      var findOneOrFind = ids.length === 1 ? this._findOne : this._find;
+      findOneOrFind({ _id: { $in: ids } }, callback);
+    }
 
-    // Get Documents
-    (documents, next) => {
-      let documentIds = [];
+    // Method create: Creates a new document with the provided attributes.
+    // Only properties mentioned in the Schema will be stored while other
+    // properties being discarded.
 
-      if (!documents) {
-        return next(null, []);
-      }
+  }, {
+    key: 'create',
+    value: function create(attrs, callback) {
+      var _this = this;
+      _async2.default.waterfall([
+      // Create Document
+      function (next) {
+        _this.MongooseModel.create(attrs, next);
+      },
 
-      // If Array, join all _ids
-      if (documents instanceof Array) {
-        documents.forEach(document => {
-          const _id = document._id.toString();
-          documentIds.push(_id);
-        });
-      } else {
-        // If JSON Object, get _id
-        documentIds.push(documents._id.toString());
-      }
+      // Get Documents
+      function (documents, next) {
+        var documentIds = [];
 
-      documentIds = documentIds.join();
-      _this.findById(documentIds, next);
-    }], callback);
-  }
+        if (!documents) {
+          return next(null, []);
+        }
 
-  // Method update: Updates the document bearing mentioned _id
-  // property value. It works by updating the entire document
-  // and not patching changes.
-  update(query = {}, $set = {}, callback) {
-    this.MongooseModel.update(query, { $set }, { multi: true }, callback);
-  }
+        // If Array, join all _ids
+        if (documents instanceof Array) {
+          documents.forEach(function (document) {
+            var _id = document._id.toString();
+            documentIds.push(_id);
+          });
+        } else {
+          // If JSON Object, get _id
+          documentIds.push(documents._id.toString());
+        }
 
-  // Method remove: Deletes the document bearing mentioned _id
-  // property value.
-  remove(query = {}, callback) {
-    this.MongooseModel.remove(query, callback);
-  }
+        documentIds = documentIds.join();
+        _this.findById(documentIds, next);
+      }], callback);
+    }
 
-  // Method aggregate: Get Computed Result
-  aggregate(query, callback) {
-    this.MongooseModel.aggregate(query, callback);
-  }
-}
+    // Method update: Updates the document bearing mentioned _id
+    // property value. It works by updating the entire document
+    // and not patching changes.
+
+  }, {
+    key: 'update',
+    value: function update() {
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var $set = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var callback = arguments[2];
+
+      this.MongooseModel.update(query, { $set: $set }, { multi: true }, callback);
+    }
+
+    // Method remove: Deletes the document bearing mentioned _id
+    // property value.
+
+  }, {
+    key: 'remove',
+    value: function remove() {
+      var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var callback = arguments[1];
+
+      this.MongooseModel.remove(query, callback);
+    }
+
+    // Method aggregate: Get Computed Result
+
+  }, {
+    key: 'aggregate',
+    value: function aggregate(query, callback) {
+      this.MongooseModel.aggregate(query, callback);
+    }
+  }]);
+
+  return MongoModel;
+}();
