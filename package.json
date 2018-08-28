@@ -1,6 +1,6 @@
 {
   "name": "mongodb-odm-callback",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MongoDB Object Document Mapping using Callback Pattern",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/agarwalmehul/mongodb-odm-callback#readme",
   "dependencies": {
-    "async": "^2.6.1"
+    "async": "^2.5.0",
+    "mongoose": "^4.13.8"
   },
   "devDependencies": {
     "babel-cli": "6.16.0",
