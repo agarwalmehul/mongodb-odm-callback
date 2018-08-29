@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.RouteHandler = undefined;
+exports.MongoRouteHandler = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -11,15 +11,15 @@ var _ResponseBody = require('./ResponseBody');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RouteHandler = exports.RouteHandler = function () {
-  function RouteHandler(Model) {
-    _classCallCheck(this, RouteHandler);
+var MongoRouteHandler = exports.MongoRouteHandler = function () {
+  function MongoRouteHandler(Model) {
+    _classCallCheck(this, MongoRouteHandler);
 
     this.Model = Model;
 
     // Method Hard-Binding to allow them to be assigned to
     // other variables and work as expected
-    this.index = this.index.bind(this);
+    this.scan = this.scan.bind(this);
     this.findById = this.findById.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -27,9 +27,9 @@ var RouteHandler = exports.RouteHandler = function () {
     this._handleError = this._handleError.bind(this);
   }
 
-  _createClass(RouteHandler, [{
-    key: 'index',
-    value: function index(request, response, next) {
+  _createClass(MongoRouteHandler, [{
+    key: 'scan',
+    value: function scan(request, response, next) {
       var _this = this;
 
       if (response.body) {
@@ -40,7 +40,7 @@ var RouteHandler = exports.RouteHandler = function () {
       var query = request.query;
 
 
-      Model.index(query, function (error) {
+      Model.scan(query, function (error) {
         var documents = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
         var responseBody = void 0;
@@ -160,11 +160,11 @@ var RouteHandler = exports.RouteHandler = function () {
     value: function _handleError(error, response) {
       var responseBody = void 0;
 
-      if (error && error.constructor === _ResponseBody.ResponseBody) {
+      if (error && error.constructor.name === 'ResponseBody') {
         response.body = error;
         return true;
       } else if (error) {
-        responseBody = new _ResponseBody.ResponseBody(500, error.toString());
+        responseBody = new _ResponseBody.ResponseBody(500, error.toString(), error);
         response.body = responseBody;
         return true;
       }
@@ -173,5 +173,5 @@ var RouteHandler = exports.RouteHandler = function () {
     }
   }]);
 
-  return RouteHandler;
+  return MongoRouteHandler;
 }();

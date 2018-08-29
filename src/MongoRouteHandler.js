@@ -2,13 +2,13 @@
 
 import { ResponseBody } from './ResponseBody'
 
-export class RouteHandler {
+export class MongoRouteHandler {
   constructor (Model) {
     this.Model = Model
 
     // Method Hard-Binding to allow them to be assigned to
     // other variables and work as expected
-    this.index = this.index.bind(this)
+    this.scan = this.scan.bind(this)
     this.findById = this.findById.bind(this)
     this.create = this.create.bind(this)
     this.update = this.update.bind(this)
@@ -16,13 +16,13 @@ export class RouteHandler {
     this._handleError = this._handleError.bind(this)
   }
 
-  index (request, response, next) {
+  scan (request, response, next) {
     if (response.body) { return process.nextTick(next) }
 
     const { Model } = this
     const { query } = request
 
-    Model.index(query, (error, documents = []) => {
+    Model.scan(query, (error, documents = []) => {
       let responseBody
       if (this._handleError(error, response)) { return next() }
 
@@ -102,11 +102,11 @@ export class RouteHandler {
   _handleError (error, response) {
     let responseBody
 
-    if (error && error.constructor === ResponseBody) {
+    if (error && error.constructor.name === 'ResponseBody') {
       response.body = error
       return true
     } else if (error) {
-      responseBody = new ResponseBody(500, error.toString())
+      responseBody = new ResponseBody(500, error.toString(), error)
       response.body = responseBody
       return true
     }

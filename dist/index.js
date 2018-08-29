@@ -16,6 +16,18 @@ Object.keys(_MongoModel).forEach(function (key) {
   });
 });
 
+var _MongoRouteHandler = require('./MongoRouteHandler');
+
+Object.keys(_MongoRouteHandler).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _MongoRouteHandler[key];
+    }
+  });
+});
+
 var _ResponseBody = require('./ResponseBody');
 
 Object.keys(_ResponseBody).forEach(function (key) {
@@ -24,18 +36,6 @@ Object.keys(_ResponseBody).forEach(function (key) {
     enumerable: true,
     get: function get() {
       return _ResponseBody[key];
-    }
-  });
-});
-
-var _RouteHandler = require('./RouteHandler');
-
-Object.keys(_RouteHandler).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _RouteHandler[key];
     }
   });
 });

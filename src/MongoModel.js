@@ -17,7 +17,7 @@ export class MongoModel {
     this._findOneRaw = this._findOneRaw.bind(this)
     this._find = this._find.bind(this)
     this._findOne = this._findOne.bind(this)
-    this.index = this.index.bind(this)
+    this.scan = this.scan.bind(this)
     this.findById = this.findById.bind(this)
     this.create = this.create.bind(this)
     this.update = this.update.bind(this)
@@ -67,9 +67,9 @@ export class MongoModel {
     this._execQuery(query, callback)
   }
 
-  // Method index: Finds all documents, transforms result using
+  // Method scan: Finds all documents, transforms result using
   // the _execQuery method and returns it.
-  index (query, callback) {
+  scan (query, callback) {
     let params = {};
     (this._filterQuery || []).forEach(key => {
       let value = query[key]

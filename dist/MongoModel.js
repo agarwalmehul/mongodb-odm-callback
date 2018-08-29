@@ -35,7 +35,7 @@ var MongoModel = exports.MongoModel = function () {
     this._findOneRaw = this._findOneRaw.bind(this);
     this._find = this._find.bind(this);
     this._findOne = this._findOne.bind(this);
-    this.index = this.index.bind(this);
+    this.scan = this.scan.bind(this);
     this.findById = this.findById.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -110,12 +110,12 @@ var MongoModel = exports.MongoModel = function () {
       this._execQuery(query, callback);
     }
 
-    // Method index: Finds all documents, transforms result using
+    // Method scan: Finds all documents, transforms result using
     // the _execQuery method and returns it.
 
   }, {
-    key: 'index',
-    value: function index(query, callback) {
+    key: 'scan',
+    value: function scan(query, callback) {
       var params = {};
       (this._filterQuery || []).forEach(function (key) {
         var value = query[key];
