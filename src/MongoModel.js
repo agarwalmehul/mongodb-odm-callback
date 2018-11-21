@@ -22,6 +22,7 @@ export class MongoModel {
     this.create = this.create.bind(this)
     this.update = this.update.bind(this)
     this.remove = this.remove.bind(this)
+    this.aggregate = this.aggregate.bind(this)
   }
 
   // Method _execQuery: Select, Populate and Sort Mongo query results
