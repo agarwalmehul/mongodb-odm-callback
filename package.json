@@ -1,6 +1,6 @@
 {
   "name": "mongodb-odm-callback",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "MongoDB Object Document Mapping using Callback Pattern",
   "main": "dist/index.js",
   "scripts": {
